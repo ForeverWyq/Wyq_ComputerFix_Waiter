@@ -3,15 +3,34 @@ import {setToken,getToken,removeToken} from '../../utils/auth'
 export default {
   namespaced:true,
   state: {
+    earn:{}, //收益
+    waiter:{},
     token:getToken(),
     info:{} //用户信息
   },
+  getters: {
+    IncomeTotal(state){
+      if(JSON.stringify(state.earn) !== '{}'){
+        let result = 0;
+        for(let earn of state.earn.values()){
+          result += earn.money * 1
+        }
+        return result;
+      }
+    }
+  },
   mutations: {
+    refreshWaiterById(state,waiter){
+      state.waiter = waiter
+    },
     refreshInfo(state,info){
       state.info = info;
     },
     refreshToken(state,token){
       state.token = token;
+    },
+    refreshEarnWaiter(state,earn){
+      state.earn = earn;
     }
   },
   actions: {
@@ -42,6 +61,21 @@ export default {
       // 3. 清理store
       context.commit('refreshToken','');
       context.commit('refreshInfo',{});
-    }
+    },
+    // 根据员工id获取员工信息
+    async FindWaiterById({commit},id){
+      let response = await get('/waiter/findWaiterById?id=' + id)
+      commit('refreshWaiterById',response.data)
+    },
+    // 修改员工信息
+    async UpdateWaiter({dispatch},params){
+      let reponse = await post('/waiter/saveOrUpdate',params)
+      // dispatch('WaiterById',     这里加id  )
+    },
+    // 收益
+    async EarningWaiter({commit},id){
+      let response = await get('/waiter/detailsShou?id='+id)
+      commit('refreshEarnWaiter',response.data)
+    },
   }
 }

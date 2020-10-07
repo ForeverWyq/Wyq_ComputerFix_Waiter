@@ -12,6 +12,16 @@ import { Toast } from 'vant'
 import store from '../store'
 // 注册页面
 import Register from '../views/Register'
+// 我的信息
+import Information from '../views/manager/information/MyInformation'
+// 实名认证
+import Realname from '../views/manager/Realname'
+// 收入详情
+import IncomeList from '../views/manager/income/List'
+// 收入详情
+import IncomeDetails from '../views/manager/income/Details'
+// 提现申请
+import Withdraw from '../views/manager/income/Withdraw'
 
 Vue.use(VueRouter)
 
@@ -48,7 +58,22 @@ const routes = [
     },{
       path: 'user',
       component: User,
-    }]
+    },{
+      path: 'information',
+      component: Information,
+    },{
+      path: 'income_list',
+      component: IncomeList
+    },{
+      path: 'income_details',
+      component: IncomeDetails
+    },{
+      path: 'withdraw',
+      component: Withdraw
+    },{
+      path: 'realname',
+      component: Realname,
+    },]
   },
   {
     path: '/login',

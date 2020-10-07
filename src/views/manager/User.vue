@@ -1,14 +1,16 @@
 <template>
   <div class="user">
     <div class="header">
-      <div class="photo">
-        <img :src="waiter.imgPhoto" alt />
-      </div>
+      <van-uploader :after-read="afterRead" >
+        <div class="photo">
+          <img :src="waiter.imgPhoto" alt=""/>
+        </div>
+      </van-uploader>
       <div class="name">{{waiter.realname}}</div>
     </div>
-    <van-cell title="我的收入" is-link to=""/>
-    <van-cell title="收入详情" is-link to="" />
-    <van-cell title="提现申请" is-link to="" />
+    <van-cell icon="search" title="我的资料" is-link to="information"/>
+    <van-cell icon="certificate" title="实名认证" is-link to="realname" />
+    <van-cell icon="gold-coin-o" title="收入详情" :value="waiter.money" is-link to="income_list" />
 
     <br>
     <div class="btn" @click="logoutHandler">退出登录</div>
@@ -18,24 +20,15 @@
 import {mapState, mapActions} from 'vuex'
 import {get, post} from '../../http/axios';
 export default {
-  data(){
-    return {
-      waiter:[],
-    }
-  },
-  computed:{
-    ...mapState("user",["info"])
-  },
   methods:{
-    ...mapActions('user',['logout']),
-    loadrealname(){
-      let url = "/waiter/findWaiterById"
-      let params={
-        id: this.info.id,
-      }
-      get(url,params).then((response)=>{
-        this.waiter=response.data;
-      })
+    ...mapActions('user',['logout', 'FindWaiterById']),
+    afterRead(file) {
+      // let url = "http://121.199.29.84:8001/file/upload"
+
+      // let photo = "http://121.199.29.84:8888/group1/"+response.data.id
+
+      // 此时可以自行将文件上传至服务器
+      console.log(file);
     },
     logoutHandler(){
       this.logout()
@@ -44,11 +37,15 @@ export default {
       })
     }
   },
+  computed:{
+    ...mapState("user",["info", "waiter"])
+  },
   created(){
-    this.loadrealname();
+    this.FindWaiterById(this.info.id);
   },
 }
 </script>
+
 <style scoped>
 .header {
   padding-top: 46px;
@@ -74,8 +71,10 @@ export default {
 
 }
 .header .photo img {
- width: 100%;
- border-radius: 50%;
+  background: #fff;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .btn {

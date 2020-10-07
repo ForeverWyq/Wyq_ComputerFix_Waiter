@@ -9,10 +9,10 @@ import './common.css'
 // 全局注册自定义组件
 import FullLayout from './components/FullLayout'
 import OrderItem from './components/OrderItem'
-import ProductItem from './components/ProductItem'
+import IncomeItem from './components/IncomeItem'
 Vue.component('wyq-fulllayout',FullLayout)
 Vue.component('wyq-order-item',OrderItem)
-Vue.component('wyq-product-item',ProductItem)
+Vue.component('wyq-income-item',IncomeItem)
 // 全局注册过滤器
 Vue.filter('datefmt',function(val){
   if(val){

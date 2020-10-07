@@ -5,18 +5,17 @@
       <van-col span="12" class="status">{{data.status}}</van-col>
     </van-row>
     <van-row>
+      <div style="padding-left:10px">服务内容:</div>
+      <span v-for="line in data.orderLines" :key="line.id">
+          <van-card :num=line.number :price=line.product.price :desc=line.product.description
+          :title=line.product.name :thumb=line.product.photo />
+          <!-- {{line.product.name}} -->
+      </span>
       <van-col :span="24" :offset="1">
-        <div v-if="data.waiter!=null">
-          顾客姓名：{{data.customer.realname}}</div>
-        <div v-if="data.waiter!=null">
-          顾客联系方式：{{data.customer.telephone}}</div>
-        <div>服务内容:
-          <span v-for="line in data.orderLines" :key="line.id">
-            {{line.product.name}}
-          </span>
-        </div>
-        <div>服务时间：{{data.orderTime | datefmt}}</div>
-        <div>服务地点：
+        <div>顾客姓名：{{data.customer.realname}}</div>
+        <div>顾客联系方式：{{data.customer.telephone}}</div>
+        <div>下单时间：{{data.orderTime | datefmt}}</div>
+        <div>地址：
           {{data.address.province}}
           {{data.address.city}}
           {{data.address.area}}
@@ -25,7 +24,7 @@
       </van-col>
     </van-row><br>
     <div class="text-right">
-      合计￥ {{data.total}}
+      总额￥ {{data.total}}
     </div>
     
     <div class="text-right" v-if="data.status==='待接单'"><br>
@@ -41,6 +40,7 @@
   </div>
 </template>
 <script>
+import { Dialog } from 'vant';
 import {get} from '../http/axios';
 export default {
   props:{
@@ -63,10 +63,15 @@ export default {
           waiterId: data.waiterId,
           orderId: data.id,
         }
-        get(url,params).then(()=>{
-          this.$toast("接单成功，请尽快服务");
-          this.$router.go(0);
-        })
+        if(data.waiter.status!="禁用"){
+          get(url,params).then(()=>{
+            this.$toast("接单成功，请尽快服务");
+            this.$router.go(0);
+          })
+        }else{
+          Dialog({ message: '请先完成实名制' })
+        }
+        
       },
       rejectHandler(id){
         let url = "/order/rejectOrder";
