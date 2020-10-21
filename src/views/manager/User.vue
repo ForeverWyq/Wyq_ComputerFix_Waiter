@@ -19,17 +19,55 @@
 <script>
 import {mapState, mapActions} from 'vuex'
 import {get, post} from '../../http/axios';
+import axios from 'axios'
 export default {
   methods:{
-    ...mapActions('user',['logout', 'FindWaiterById']),
+    ...mapActions('user',['logout', 'FindWaiterById', 'UpdateWaiter']),
+
+    // 更换头像
     afterRead(file) {
       // let url = "http://121.199.29.84:8001/file/upload"
-
-      // let photo = "http://121.199.29.84:8888/group1/"+response.data.id
-
-      // 此时可以自行将文件上传至服务器
       console.log(file);
+      // 此时可以自行将文件上传至服务器
+      this.uploadImg(file.file)
     },
+    // 上传图片到服务器
+    uploadImg (file) {
+    // 创建form对象
+      let formdata = new FormData();
+      // 通过append向form对象添加数据,可以通过append继续添加数据
+      //或formdata.append('file',file);
+      formdata.append('file', file, file.name);
+      //设置请求头
+      let config = {
+          headers:{
+              'Content-Type':'multipart/form-data'
+          }
+      };  
+      //this.axios 是因为在main.js写在vue实例里
+      const axiosAjax = axios.create({
+          timeout: 1000 * 60, //时间
+          withCredentials: true //跨域携带cookie
+      });
+      axiosAjax.post('http://121.199.29.84:8001/file/upload',formdata,config)
+      .then((res)=>{   //这里的url为后端接口
+          console.log(res.data.data.id);
+          //res 为接口返回值
+          let photo = "http://121.199.29.84:8888/group1/"+res.data.data.id
+          console.log(photo);
+          let params = this.waiter;
+          params.imgPhoto = photo;
+          this.UpdateWaiter(params)
+          .then(res=>{
+            // console.log(this.info.id)
+            this.FindWaiterById(this.info.id).then(()=>{
+              this.$toast('更换成功');
+            })
+          })
+      }).catch((response) => {})
+    },
+
+    // 退出登录
     logoutHandler(){
       this.logout()
       .then(()=>{
